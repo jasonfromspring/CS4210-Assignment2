@@ -14,11 +14,12 @@ from sklearn import tree
 import csv
 
 dataSets = ['contact_lens_training_1.csv', 'contact_lens_training_2.csv', 'contact_lens_training_3.csv']
-X = []
-Y = []
+
 
 for ds in dataSets:
 
+    X = []
+    Y = []
     dbTraining = []
     
 
@@ -81,83 +82,73 @@ for ds in dataSets:
 
 
 #read the test data and add this data to dbTest
-    #--> add your Python code here
-dbTest = []
+    dbTest = []
 
-with open('contact_lens_test.csv', 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for i, row in enumerate(reader):
-            if i > 0: #skipping the header
-                dbTest.append (row)
+    with open('contact_lens_test.csv', 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            for i, row in enumerate(reader):
+                if i > 0: #skipping the header
+                    dbTest.append (row)
 
-#loop your training and test tasks 10 times here
-sums = []
-for i in range (10):
+    #loop your training and test tasks 10 times here
+    sums = 0
+    for i in range (10):
 
-    #fitting the decision tree to the data setting max_depth=3
-    clf = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth=3)
-    clf = clf.fit(X, Y)
-
-    
-    correct = 0
-    count = 0
-    for data in dbTest:
-        count += 1
-        row = []
-        col=0
-        for value in data:
-            if col== 0:
-                if value == 'Young':
-                    row.append(1)
-                elif value == 'Prepresbyopic':
-                    row.append(2)
-                else:
-                    row.append(3)
-            elif col == 1:
-                if value == 'Myope':
-                    row.append(1)
-                else:
-                    row.append(2)
-            elif col == 2:
-                if value == 'Yes':
-                    row.append(1)
-                else:
-                    row.append(2)
-            elif col == 3: 
-                if value == 'Normal':
-                    row.append(1)
-                else:
-                    row.append(2)
-            col=col+1
-
-        val = data[-1]
-        if val == 'Yes':
-            real = 1
-        else:
-            real = 2
+        #fitting the decision tree to the data setting max_depth=3
+        clf = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth=3)
+        clf = clf.fit(X, Y)
 
         
-        #transform the features of the test instances to numbers following the same strategy done during training,
-        #and then use the decision tree to make the class prediction. For instance: class_predicted = clf.predict([[3, 1, 2, 1]])[0]
-        #where [0] is used to get an integer as the predicted class label so that you can compare it with the true label
-        #--> add your Python code here
-        class_predicted = clf.predict([row])[0]
-        
-        if class_predicted==real:
-            correct += 1
-        #compare the prediction with the true label (located at data[4]) of the test instance to start calculating the accuracy.
-        #--> add your Python code here
-    sums.append(correct)
-    correct = 0
+        correct = 0
+        count = 0
+        for data in dbTest:
+            count += 1
+            row = []
+            col=0
+            for value in data:
+                if col== 0:
+                    if value == 'Young':
+                        row.append(1)
+                    elif value == 'Prepresbyopic':
+                        row.append(2)
+                    else:
+                        row.append(3)
+                elif col == 1:
+                    if value == 'Myope':
+                        row.append(1)
+                    else:
+                        row.append(2)
+                elif col == 2:
+                    if value == 'Yes':
+                        row.append(1)
+                    else:
+                        row.append(2)
+                elif col == 3: 
+                    if value == 'Normal':
+                        row.append(1)
+                    else:
+                        row.append(2)
+                col=col+1
 
-#find the average of this model during the 10 runs (training and test set)
-#--> add your Python code here
-average = sum(sums)/len(sums)
-average = average / count
+            val = data[-1]
+            if val == 'Yes':
+                real = 1
+            else:
+                real = 2
 
-
-#print the average accuracy of this model during the 10 runs (training and test set).
-#your output should be something like that: final accuracy when training on contact_lens_training_1.csv: 0.2
-#--> add your Python code here
-
-print("Final accuracy when training: "+str(average))
+            
+            #transform the features of the test instances to numbers following the same strategy done during training,
+            #and then use the decision tree to make the class prediction. For instance: class_predicted = clf.predict([[3, 1, 2, 1]])[0]
+            #where [0] is used to get an integer as the predicted class label so that you can compare it with the true label
+            class_predicted = clf.predict([row])[0]
+            
+            if class_predicted==real:
+                correct += 1
+            #compare the prediction with the true label (located at data[4]) of the test instance to start calculating the accuracy.
+        sums += correct/count
+        correct = 0
+    #find the average of this model during the 10 runs (training and test set)
+    average = sums/10
+    #print the average accuracy of this model during the 10 runs (training and test set).
+    #your output should be something like that: final accuracy when training on contact_lens_training_1.csv: 0.2
+    print("Final accuracy when training on "+str(ds)+": "+str(average))
